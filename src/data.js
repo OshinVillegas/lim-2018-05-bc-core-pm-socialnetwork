@@ -198,12 +198,12 @@ function valposteos() {
             const p = document.createElement('p');
 
             p.innerHTML = `
-                    <div class="w3-container w3-card w3-white w3-round w3-margin" style="width:90%;"><br>
-                    <div><img src="../imagenes/Captura.jpg" class="w3-left w3-circle w3-margin-right" style="width:100px;heigth:120px;"></div>
-                    <div><h1>FREEW!<h1></div>
-                    <span class="w3-right w3-opacity">16 min</span>
-                    <div><p style="font-size:20px;"></p></div>
-                    <div id=${item}>${snapshot.val()[item].body}</div><br>
+            <div class="w3-container w3-card w3-white w3-round w3-margin" style="width:90%;"><br>
+
+            <div><img src="../imagenes/logoWeb.png" id="logoWeb"  style="width:30%;heigth:20%;"></div>
+            <span class="w3-right w3-opacity">16 min</span>
+            <div><p style="font-size:20px;"></p></div>
+            <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
                     <hr class="w3-clear">
                     <button id="fb-root" data-layout="button_count" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-thumbs-up"></i> Me Gusta</button> 
                     <button id="plusone-div" type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comentar</button> 
