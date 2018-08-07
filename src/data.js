@@ -3,11 +3,8 @@ window.onload = () => {
         if (user) {
             data.classList.remove("hiden");
             Init.classList.add("hiden");
-
-            Profile.innerHTML = "<img style='height:106px;width:106px;border-radius:100px;float:center' src='" + user.photoURL + "'/>";
+            Profile.innerHTML = "<img style='height:110px;width:110px;border-radius:100px;float:center;' src='" + user.photoURL + "'/>";
             UserCount.innerHTML = "<p>" + user.displayName + "</p>";
-
-
             console.log('Inicio sesion srta')
         } else {
             Init.classList.remove("hiden");
@@ -17,10 +14,6 @@ window.onload = () => {
     });
 }
 
-document.getElementById('muro').addEventListener('click', muro);
-function muro() {
-    window.location.href = 'indexMuro.html'
-}
 function guardaDatos(user) {
     var usuario = {
         uid: user.uid,
@@ -33,29 +26,52 @@ function guardaDatos(user) {
         .set(usuario)
 }
 
+
+
+
 const registerFunction = () => {
-    firebase.auth().createUserWithEmailAndPassword(email1.value, pass.value)
-        .then(function () {
-            state.name = name.value;
-            guardaDatos(result.user);
-            console.log('se creo el usuario');
-            alert("Usted está registradx")
-        })
-        .catch(function (error) {
-            console.log(error.code, error.message);
-        });
+    if (email1.value !== '' && pass.value !== '' && name.value !== '') {
+        if (/^[a-zA-Z0-9._-]+@+[a-z]+.+[a-z]/.test(email1.value)) {
+            firebase.auth().createUserWithEmailAndPassword(email1.value, pass.value)
+                .then(function () {
+                    state.name = name.value;
+                    guardaDatos(result.user);
+                    console.log('se creo el usuario');
+                    alert("Usted está registradx")
+                })
+                .catch(function (error) {
+                    console.log(error.code, error.message);
+                });
+        }
+        else {
+            alert("correo electronico incorrecto");
+        }
+    }
+    else {
+        alert("debe llenar los campos vacios obligatoriamente");
+    }
 }
 
 const signinFunction = () => {
-    firebase.auth().signInWithEmailAndPassword(email.value, password.value)
-        .then(function () {
-            guardaDatos(result.user);
-            console.log('inicio sesión');
-        })
-        .catch(function (error) {
-            console.log(error.code, error.message)
-        });
+    if (email.value !== '' && password.value !== '') {
+        if (/^[a-zA-Z0-9._-]+@+[a-z]+.+[a-z]/.test(email.value)) {
+            firebase.auth().signInWithEmailAndPassword(email.value, password.value)
+                .then(function () {
+                    guardaDatos(result.user);
+                    console.log('inicio sesión');
+                })
+                .catch(function (error) {
+                    console.log(error.code, error.message)
+                    alert('Datos incorrectos')
+                });
+        }
+        else {
+            alert("correo electronico incorrecto");
+        }
 
+    } else {
+        alert("debe llenar los campos vacios obligatoriamente")
+    }
 }
 
 const logoutFunction = () => {
@@ -111,6 +127,8 @@ function writeNewPost(uid, body) {
     var postData = {
         uid: uid,
         body: body,
+        starCount: 0,
+
     };
 
     if (postKeyUpdate == '') {
@@ -146,14 +164,15 @@ function removePost(postkey) {
 
 function editPost(postkey) {
     let uid = firebase.auth().currentUser.uid;
+
     let path = '/posts/' + uid + '/' + postkey;
     let promise = firebase.database().ref(path).once('value');
     promise.then(snapshot => {
 
         postKeyUpdate = postkey;
         let msg = snapshot.val().body;
-
         post.value = msg;
+
     })
 }
 
@@ -168,6 +187,8 @@ function valposteos() {
     while (div.firstChild) div.removeChild(div.firstChild);
 
     var userId = firebase.auth().currentUser.uid;
+
+
     const promesita = firebase.database().ref('/posts').child(userId).once('value');
 
     const posteos = promesita.then(function (snapshot) {
@@ -177,22 +198,33 @@ function valposteos() {
             const p = document.createElement('p');
 
             p.innerHTML = `
-                    <div class="w3-card w3-round w3-white">
-              <div class="w3-container w3-padding">
-                    <p>${snapshot.val()[item].uid}</p>
-                    <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-                    <div id='prof' class="w3-left w3-circle w3-margin-right" style="width:60px"></div>
+                    <div class="w3-container w3-card w3-white w3-round w3-margin" style="width:90%;"><br>
+                    <div><img src="../imagenes/captura.jpg" class="w3-left w3-circle w3-margin-right" style="width:100px;heigth:120px;"></div>
+                    <div><h1>FREEW!<h1></div>
                     <span class="w3-right w3-opacity">16 min</span>
+                    <div><p style="font-size:20px;"></p></div>
                     <div id=${item}>${snapshot.val()[item].body}</div><br>
                     <hr class="w3-clear">
                     <button id="fb-root" data-layout="button_count" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-thumbs-up"></i> Me Gusta</button> 
                     <button id="plusone-div" type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comentar</button> 
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i>Elimina</button>           
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i> Editar</button>
-                    </div> 
-                    </div><br>
+                     <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="document.getElementById('modalsRemove').style.display='block'"><i class="far fa-trash-alt"></i>Eliminar</button>          
+                     <div id="modalsRemove" class="w3-modal w3-animate-zoom" onclick="this.style.display='none'">
+                    <div style="background:white;width:40%;margin:10% 30%;padding:30px;text-align:center;">
+                    <p>¿Desea Eliminar su publicación?</p>
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> SI</button>          
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-trash-alt"></i> NO</button>
                     </div>
-                    </div>`
+                    </div> 
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="document.getElementById('modals').style.display='block'"><i class="far fa-edit"></i>Editar</button>
+                    <div id="modals" class="w3-modal w3-animate-zoom" onclick="this.style.display='none'">
+                    <div style="background:white;width:40%;margin:10% 30%;padding:30px;text-align:center;">
+                    <p>¿Desea editar su publicación?</p>
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i> SI</button>
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-edit"></i> NO</button>
+                    </div>
+                    </div> 
+                
+                    </div><br>`
                 ;
             return div.appendChild(p)
         })
@@ -205,6 +237,7 @@ function valposteos() {
 //console.log(valposteos());
 content.appendChild(div)
 botonpostea.addEventListener('click', () => {
+
     console.log('entra al evento')
 
     var userId = firebase.auth().currentUser.uid;
@@ -212,22 +245,6 @@ botonpostea.addEventListener('click', () => {
 
     valposteos();
 
-    /*     const p = document.createElement('p');
-    
-        p.innerHTML = content.innerHTML += `
-                    
-                        <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-                        <div id='prof' class="w3-left w3-circle w3-margin-right" style="width:60px"></div>
-                        <span class="w3-right w3-opacity">16 min</span>
-                        <div id=id=${newPost}>${post.value}</div><br>
-                        <hr class="w3-clear">
-                        <button id="fb-root" data-layout="button_count" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-thumbs-up"></i> Me Gusta</button> 
-                        <button id="plusone-div" type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comentar</button> 
-                        <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "eliminar()"><i class="far fa-trash-alt"></i>Elimina</button>           
-                        <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editar()"><i class="far fa-edit"></i> Editar</button>
-                        </div> 
-                        </div><br>`
-            ; */
     return 'creo';
 
 });
