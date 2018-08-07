@@ -6,7 +6,7 @@
 }
 
 body{   
-    background:url(imagenes/Captura.jpg);
+    background:url(../imagenes/Captura.jpg);
     background-size: cover;
     font-family: 'Amatic SC'; 
     padding: 0px;
@@ -22,12 +22,12 @@ body{
     width: 500px;
 }
 #Init{
-background: url(imagenes/Captura.jpg); 
+background: url(../imagenes/Captura.jpg); 
 background-size: cover;
 }
 .containerG {
 margin-left: 50px;
-background: url(imagenes/Captura.jpg);
+background: url(../imagenes/Captura.jpg);
 background-size: cover;
 padding-left:500px;
 padding-top:100px;
