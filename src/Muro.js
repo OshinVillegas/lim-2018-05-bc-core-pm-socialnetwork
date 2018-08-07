@@ -79,7 +79,7 @@ function valposteos() {
 
             p.innerHTML = `
             <div class="w3-container w3-card w3-white w3-round w3-margin" style="width:90%;"><br>
-            <div><img src="../imagenes/captura.jpg" class="w3-left w3-circle w3-margin-right" style="width:60px"></div>
+            <div><img src="../imagenes/Captura.jpg" class="w3-left w3-circle w3-margin-right" style="width:60px"></div>
             <span class="w3-right w3-opacity">16 min</span>
             <div><p style="font-size:20px;"></p></div>
             <div id=${item}>${snapshot.val()[item].body}</div><br>
