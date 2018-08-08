@@ -168,7 +168,6 @@ function editPost(postkey) {
     let path = '/posts/' + uid + '/' + postkey;
     let promise = firebase.database().ref(path).once('value');
     promise.then(snapshot => {
-
         postKeyUpdate = postkey;
         let msg = snapshot.val().body;
         post.value = msg;
