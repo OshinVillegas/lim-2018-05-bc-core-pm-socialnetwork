@@ -162,9 +162,6 @@ function removePost(postkey) {
 
 }
 
-let count = 0;
-
-
 function editPost(postkey) {
     let uid = firebase.auth().currentUser.uid;
     let path = '/posts/' + uid + '/' + postkey;
@@ -180,11 +177,6 @@ function editPost(postkey) {
 }
 
 
-function like() {
-    count = count + 1;
-    sumando.innerHTML = count;
-
-}
 
 let post = document.getElementById('post');
 let content = document.getElementById('content');
@@ -213,9 +205,7 @@ function valposteos() {
                     <div><p style="font-size:20px;"></p></div>
                     <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
                     <hr class="w3-clear">
-                   <form name="contador" >
-                   <div id="count_click"></div>
-<button name="count_click">AÑADIR CLICK</button>
+                    <button id= 'contando'  class="w3-button w3-theme-d1 w3-margin-bottom" onclick ="like(1)"><i class="far fa-thumbs-up"></i> Me Gusta <span id="countText"></span></button>  
                       <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>         
                     <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i>EDITAR</button>
                     </div>
@@ -229,26 +219,15 @@ function valposteos() {
 
     console.log(posteos);
 }
+let count = 0;
+function like() {
+    const countText = document.getElementById('contando');
+    count = count + 1;
+    countText.innerHTML = count;
 
-//PONE EL CONTADOR A 0
-var count_click = 0;
-
-//AÑADE UN CLICK AL EJECUTAR LA FUNCIÓN
-function count_click_add() {
-    count_click += 1;
 }
+valposteos();
 
-//MUESTRA CUANTOS CLICK LLEVAMOS
-$("#count_click").text(count_click);
-
-//AÑADE A TODOS LOS BOTONES CON EL NAME count_click QUE AL SER PULSADOS EJECUTEN EL CONTADOR
-$(document).ready(function () {
-    $("button[name='count_click']").click(function () {
-        count_click_add();
-    });
-});
-
-//console.log(valposteos());
 content.appendChild(div)
 botonpostea.addEventListener('click', () => {
 
@@ -257,8 +236,7 @@ botonpostea.addEventListener('click', () => {
     var userId = firebase.auth().currentUser.uid;
     const newPost = writeNewPost(userId, post.value);
 
-    valposteos();
-
+   
     return 'creo';
 
 });
