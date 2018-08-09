@@ -3,7 +3,7 @@ window.onload = () => {
         if (user) {
             data.classList.remove("hiden");
             Init.classList.add("hiden");
-            Profile.innerHTML = "<img style='height:110px;width:110px;border-radius:100px;float:center;' src='" + user.photoURL + "'/>";
+            Profile.innerHTML = "<img style='height:140px;width:140px;border-radius:100px;float:center;' src='" + user.photoURL + "'/>";
             UserCount.innerHTML = "<p>" + user.displayName + "</p>";
             console.log('Inicio sesion srta')
         } else {
@@ -146,6 +146,7 @@ function writeNewPost(uid, body) {
     }
     firebase.database().ref().update(updates);
     return newPostKey;
+
 }
 
 
@@ -161,19 +162,28 @@ function removePost(postkey) {
 
 }
 
+let count = 0;
+
 
 function editPost(postkey) {
     let uid = firebase.auth().currentUser.uid;
-
     let path = '/posts/' + uid + '/' + postkey;
-    let promise = firebase.database().ref(path).once('value');
-    promise.then(snapshot => {
 
+    let promise = firebase.database().ref(path).once('value');
+
+    promise.then(snapshot => {
         postKeyUpdate = postkey;
         let msg = snapshot.val().body;
         post.value = msg;
 
     })
+}
+
+
+function like() {
+    count = count + 1;
+    sumando.innerHTML = count;
+
 }
 
 let post = document.getElementById('post');
@@ -194,36 +204,22 @@ function valposteos() {
     const posteos = promesita.then(function (snapshot) {
 
         Object.keys(snapshot.val()).map(item => {
-
             const p = document.createElement('p');
 
             p.innerHTML = `
                     <div class="w3-container w3-card w3-white w3-round w3-margin" style="width:90%;"><br>
-                    <div><img src="../imagenes/captura.jpg" class="w3-left w3-circle w3-margin-right" style="width:100px;heigth:120px;"></div>
-                    <div><h1>FREEW!<h1></div>
+                    <div><img src="../imagenes/logoWeb.png" id="logoWeb"  style="width:30%;heigth:20%;"></div>
                     <span class="w3-right w3-opacity">16 min</span>
                     <div><p style="font-size:20px;"></p></div>
-                    <div id=${item}>${snapshot.val()[item].body}</div><br>
+                    <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
                     <hr class="w3-clear">
-                    <button id="fb-root" data-layout="button_count" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-thumbs-up"></i> Me Gusta</button> 
-                    <button id="plusone-div" type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comentar</button> 
-                     <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="document.getElementById('modalsRemove').style.display='block'"><i class="far fa-trash-alt"></i>Eliminar</button>          
-                     <div id="modalsRemove" class="w3-modal w3-animate-zoom" onclick="this.style.display='none'">
-                    <div style="background:white;width:40%;margin:10% 30%;padding:30px;text-align:center;">
-                    <p>¿Desea Eliminar su publicación?</p>
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> SI</button>          
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-trash-alt"></i> NO</button>
+                   <form name="contador" >
+                   <div id="count_click"></div>
+<button name="count_click">AÑADIR CLICK</button>
+                      <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>         
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i>EDITAR</button>
                     </div>
                     </div> 
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="document.getElementById('modals').style.display='block'"><i class="far fa-edit"></i>Editar</button>
-                    <div id="modals" class="w3-modal w3-animate-zoom" onclick="this.style.display='none'">
-                    <div style="background:white;width:40%;margin:10% 30%;padding:30px;text-align:center;">
-                    <p>¿Desea editar su publicación?</p>
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i> SI</button>
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-edit"></i> NO</button>
-                    </div>
-                    </div> 
-                
                     </div><br>`
                 ;
             return div.appendChild(p)
@@ -233,6 +229,24 @@ function valposteos() {
 
     console.log(posteos);
 }
+
+//PONE EL CONTADOR A 0
+var count_click = 0;
+
+//AÑADE UN CLICK AL EJECUTAR LA FUNCIÓN
+function count_click_add() {
+    count_click += 1;
+}
+
+//MUESTRA CUANTOS CLICK LLEVAMOS
+$("#count_click").text(count_click);
+
+//AÑADE A TODOS LOS BOTONES CON EL NAME count_click QUE AL SER PULSADOS EJECUTEN EL CONTADOR
+$(document).ready(function () {
+    $("button[name='count_click']").click(function () {
+        count_click_add();
+    });
+});
 
 //console.log(valposteos());
 content.appendChild(div)

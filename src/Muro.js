@@ -78,32 +78,18 @@ function valposteos() {
             const p = document.createElement('p');
 
             p.innerHTML = `
-            <div class="w3-container w3-card w3-white w3-round w3-margin" style="width:90%;"><br>
-            <div><img src="../imagenes/captura.jpg" class="w3-left w3-circle w3-margin-right" style="width:60px"></div>
-            <span class="w3-right w3-opacity">16 min</span>
-            <div><p style="font-size:20px;"></p></div>
-            <div id=${item}>${snapshot.val()[item].body}</div><br>
-            <hr class="w3-clear">
-            <button id="fb-root" data-layout="button_count" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-thumbs-up"></i> Me Gusta</button> 
-            <button id="plusone-div" type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comentar</button> 
-             <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="document.getElementById('modalsRemove').style.display='block'"><i class="far fa-trash-alt"></i>Eliminar</button>          
-             <div id="modalsRemove" class="w3-modal w3-animate-zoom" onclick="this.style.display='none'">
-            <div style="background:white;width:40%;margin:10% 30%;padding:30px;text-align:center;">
-            <p>¿Desea Eliminar su publicación?</p>
-            <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> SI</button>          
-            <button class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-trash-alt"></i> NO</button>
-            </div>
-            </div> 
-            <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="document.getElementById('modals').style.display='block'"><i class="far fa-edit"></i>Editar</button>
-            <div id="modals" class="w3-modal w3-animate-zoom" onclick="this.style.display='none'">
-            <div style="background:white;width:40%;margin:30%;padding:30px;text-align:center;">
-            <p>¿Desea editar su publicación?</p>
-            <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i> SI</button>
-            <button class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-edit"></i> NO</button>
-            </div>
-            </div> 
-        
-            </div><br>`
+                < div class="w3-container w3-card w3-white w3-round w3-margin" style = "width:90%;" > <br>
+                    <div><img src="../imagenes/logoWeb.png" id="logoWeb" style="width:30%;heigth:20%;"></div>
+                        <span class="w3-right w3-opacity">16 min</span>
+                        <div><p style="font-size:20px;"></p></div>
+                        <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
+                            <hr class="w3-clear">
+                                <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="like(1)"><i class="far fa-thumbs-up"></i>Me Gusta `+ count + `</button>
+                                <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>
+                                <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="editPost('${item}')"><i class="far fa-edit"></i>EDITAR</button>
+                    </div>
+                    </div>
+                    </div><br>`
                 ;
             return div.appendChild(p)
         })
