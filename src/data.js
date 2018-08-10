@@ -11,7 +11,9 @@ window.onload = () => {
             data.classList.add('hiden');
             console.log('Inicio sesion srta')
         }
+        valposteos()
     });
+
 }
 
 function guardaDatos(user) {
@@ -197,6 +199,7 @@ function valposteos() {
     const posteos = promesita.then(function (snapshot) {
 
         Object.keys(snapshot.val()).map(item => {
+
             const p = document.createElement('p');
 
             p.innerHTML = `
@@ -206,7 +209,7 @@ function valposteos() {
                     <div><p style="font-size:20px;"></p></div>
                     <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
                     <hr class="w3-clear">
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick ="like('${item}')"><i class="far fa-thumbs-up"></i> Me Gusta <span id="countText"></span></button>  
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick ="like('${item}','${userId}')"><i class="far fa-thumbs-up"></i> Me Gusta ${snapshot.val()[item].likeCount}</button>  
                       <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>         
                     <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i>EDITAR</button>
                     </div>
@@ -222,21 +225,22 @@ function valposteos() {
 }
 
 
-function like(postkey) {
+function like(postkey, uid) {
     let postIds = firebase.database().ref('posts/' + uid + '/' + postkey);
     postIds.transaction(function (element) {
         console.log(element)
         if (element) {
             element.likeCount++;
-            const countText = document.getElementById('countText');
 
-            countText.innerHTML = element.likeCount;
+            window.location.reload(true);
+            // countText.innerHTML = element.likeCount;
         }
         return element;
     })
 
-
 }
+
+
 //console.log(valposteos());
 content.appendChild(div)
 botonpostea.addEventListener('click', () => {
