@@ -1,18 +1,13 @@
-
-document.getElementById('perfil').addEventListener('click', perfil);
-function perfil() {
-    window.location.href = 'index.html'
-}
-
 let postKeyUpdate = '';
 
 function writeNewPost(uid, body) {
     console.log('write');
     // A post entry.
     var postData = {
-
         uid: uid,
         body: body,
+        likeCount: 0,
+
     };
 
     if (postKeyUpdate == '') {
@@ -30,6 +25,7 @@ function writeNewPost(uid, body) {
     }
     firebase.database().ref().update(updates);
     return newPostKey;
+
 }
 
 
@@ -38,6 +34,7 @@ function removePost(postkey) {
     let path = '/posts/' + uid + '/' + postkey;
     firebase.database().ref(path).remove().then(function () {
         valposteos();
+        alert("desea eliminar su comentario")
     })
         .catch(function (error) {
             console.log("ERROR PE: " + error.message)
@@ -48,15 +45,18 @@ function removePost(postkey) {
 function editPost(postkey) {
     let uid = firebase.auth().currentUser.uid;
     let path = '/posts/' + uid + '/' + postkey;
-    let promise = firebase.database().ref(path).once('value');
-    promise.then(snapshot => {
 
+    let promise = firebase.database().ref(path).once('value');
+
+    promise.then(snapshot => {
         postKeyUpdate = postkey;
         let msg = snapshot.val().body;
-
         post.value = msg;
+
     })
 }
+
+
 
 let post = document.getElementById('post');
 let content = document.getElementById('content');
@@ -69,6 +69,8 @@ function valposteos() {
     while (div.firstChild) div.removeChild(div.firstChild);
 
     var userId = firebase.auth().currentUser.uid;
+
+
     const promesita = firebase.database().ref('/posts').child(userId).once('value');
 
     const posteos = promesita.then(function (snapshot) {
@@ -77,19 +79,18 @@ function valposteos() {
 
             const p = document.createElement('p');
 
-            
             p.innerHTML = `
-                < div class="w3-container w3-card w3-white w3-round w3-margin" style = "width:90%;" > <br>
-                    <div><img src="../imagenes/logoWeb.png" id="logoWeb" style="width:30%;heigth:20%;"></div>
-                        <span class="w3-right w3-opacity">16 min</span>
-                        <div><p style="font-size:20px;"></p></div>
-                        <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
-                            <hr class="w3-clear">
-                                <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="like(1)"><i class="far fa-thumbs-up"></i>Me Gusta `+ count + `</button>
-                                <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>
-                                <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick="editPost('${item}')"><i class="far fa-edit"></i>EDITAR</button>
+                    <div class="w3-container w3-card w3-white w3-round w3-margin" style="width:90%;"><br>
+                    <div><img src="../imagenes/logoWeb.png" id="logoWeb"  style="width:30%;heigth:20%;"></div>
+                    <span class="w3-right w3-opacity">16 min</span>
+                    <div><p style="font-size:20px;"></p></div>
+                    <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
+                    <hr class="w3-clear">
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick ="like('${item}','${userId}')"><i class="far fa-thumbs-up"></i> Me Gusta ${snapshot.val()[item].likeCount}</button>  
+                      <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>         
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i>EDITAR</button>
                     </div>
-                    </div>
+                    </div> 
                     </div><br>`
                 ;
             return div.appendChild(p)
@@ -100,9 +101,27 @@ function valposteos() {
     console.log(posteos);
 }
 
+
+function like(postkey, uid) {
+    let postIds = firebase.database().ref('posts/' + uid + '/' + postkey);
+    postIds.transaction(function (element) {
+        console.log(element)
+        if (element) {
+            element.likeCount++;
+
+            window.location.reload(true);
+            // countText.innerHTML = element.likeCount;
+        }
+        return element;
+    })
+
+}
+
+
 //console.log(valposteos());
 content.appendChild(div)
 botonpostea.addEventListener('click', () => {
+
     console.log('entra al evento')
 
     var userId = firebase.auth().currentUser.uid;
@@ -110,22 +129,6 @@ botonpostea.addEventListener('click', () => {
 
     valposteos();
 
-    /*     const p = document.createElement('p');
-    
-        p.innerHTML = content.innerHTML += `
-                    
-                        <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-                        <div id='prof' class="w3-left w3-circle w3-margin-right" style="width:60px"></div>
-                        <span class="w3-right w3-opacity">16 min</span>
-                        <div id=id=${newPost}>${post.value}</div><br>
-                        <hr class="w3-clear">
-                        <button id="fb-root" data-layout="button_count" type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="far fa-thumbs-up"></i> Me Gusta</button> 
-                        <button id="plusone-div" type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comentar</button> 
-                        <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "eliminar()"><i class="far fa-trash-alt"></i>Elimina</button>           
-                        <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editar()"><i class="far fa-edit"></i> Editar</button>
-                        </div> 
-                        </div><br>`
-            ; */
     return 'creo';
 
 });
