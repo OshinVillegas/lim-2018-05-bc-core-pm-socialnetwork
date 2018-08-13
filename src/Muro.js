@@ -130,3 +130,12 @@ botonpostea.addEventListener('click', () => {
         alert("Para publicar debes poner texto");
     }
 });
+const logoutFunction = () => {
+    firebase.auth().signOut().then(function () {
+        console.log('cerraste Sesion srta')
+        Init.classList.remove("hiden");
+        data.classList.add("hiden");
+    }).catch(function (error) {
+        console.log('error al cerrar sesion');
+    })
+}

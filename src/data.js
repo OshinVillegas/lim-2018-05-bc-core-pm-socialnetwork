@@ -43,6 +43,7 @@ const registerFunction = () => {
                 })
                 .catch(function (error) {
                     console.log(error.code, error.message);
+                    alert(error.message)
                 });
         }
         else {
@@ -53,7 +54,6 @@ const registerFunction = () => {
         alert("debe llenar los campos vacios obligatoriamente");
     }
 }
-
 const signinFunction = () => {
     if (email.value !== '' && password.value !== '') {
         if (/^[a-zA-Z0-9._-]+@+[a-z]+.+[a-z]/.test(email.value)) {
@@ -64,7 +64,7 @@ const signinFunction = () => {
                 })
                 .catch(function (error) {
                     console.log(error.code, error.message)
-                    alert('Datos incorrectos')
+                    alert(error.message)
                 });
         }
         else {
@@ -75,7 +75,6 @@ const signinFunction = () => {
         alert("debe llenar los campos vacios obligatoriamente")
     }
 }
-
 const logoutFunction = () => {
     firebase.auth().signOut().then(function () {
         console.log('cerraste Sesion srta')
