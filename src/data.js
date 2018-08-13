@@ -168,13 +168,15 @@ function removePost(postkey) {
 function editPost(postkey) {
     let uid = firebase.auth().currentUser.uid;
     let path = '/posts/' + uid + '/' + postkey;
-
     let promise = firebase.database().ref(path).once('value');
 
     promise.then(snapshot => {
         postKeyUpdate = postkey;
+
         let msg = snapshot.val().body;
+
         post.value = msg;
+        console.log(post)
 
     })
 }
@@ -188,18 +190,11 @@ const botonpostea = document.getElementById('botonpostea');
 
 const div = document.createElement('div');
 function valposteos() {
-
     while (div.firstChild) div.removeChild(div.firstChild);
-
     var userId = firebase.auth().currentUser.uid;
-
-
     const promesita = firebase.database().ref('/posts').child(userId).once('value');
-
     const posteos = promesita.then(function (snapshot) {
-
         Object.keys(snapshot.val()).map(item => {
-
             const p = document.createElement('p');
 
             p.innerHTML = `
@@ -210,17 +205,15 @@ function valposteos() {
                     <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
                     <hr class="w3-clear">
                     <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick ="like('${item}','${userId}')"><i class="far fa-thumbs-up"></i> Me Gusta ${snapshot.val()[item].likeCount}</button>  
-                      <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>         
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>         
                     <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i>EDITAR</button>
                     </div>
                     </div> 
-                    </div><br>`
-                ;
+                    </div><br>`;
             return div.appendChild(p)
         })
         return snapshot.val();
     });
-
     console.log(posteos);
 }
 
@@ -231,9 +224,7 @@ function like(postkey, uid) {
         console.log(element)
         if (element) {
             element.likeCount++;
-
             window.location.reload(true);
-            // countText.innerHTML = element.likeCount;
         }
         return element;
     })
@@ -245,13 +236,15 @@ function like(postkey, uid) {
 content.appendChild(div)
 botonpostea.addEventListener('click', () => {
 
-    console.log('entra al evento')
-
-    var userId = firebase.auth().currentUser.uid;
-    const newPost = writeNewPost(userId, post.value);
-
-    valposteos();
-
-    return 'creo';
-
+    if (post.value != '') {
+        console.log('entra al evento')
+        var userId = firebase.auth().currentUser.uid;
+        const newPost = writeNewPost(userId, post.value);
+        valposteos();
+        post.value = '';
+        return 'creo';
+    }
+    else {
+        alert("Para publicar debes poner texto");
+    }
 });

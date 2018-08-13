@@ -1,3 +1,30 @@
+document.getElementById('perfil').addEventListener('click', perfil);
+function perfil() {
+    window.location.href = 'index.html'
+}
+
+
+window.onload = () => {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            console.log('Inicio sesion srta')
+        } else {
+
+        }
+        valposteos()
+    });
+
+}
+
+document.getElementById('botoncerrar').addEventListener('click', () => {
+    firebase.auth().signOut().then(function () {
+        console.log('cerraste Sesion srta')
+        location.href = "index.html"
+    }).catch(function (error) {
+        console.log('error al cerrar sesion');
+    })
+})
+
 let postKeyUpdate = '';
 
 function writeNewPost(uid, body) {
@@ -12,15 +39,17 @@ function writeNewPost(uid, body) {
 
     if (postKeyUpdate == '') {
         // Get a key for a new Post.
-        var newPostKey = firebase.database().ref().child('posts').push().key;
+        var newPostKey = firebase.database().ref().child('user-posts').push().key;
 
         // Write the new post's data simultaneously in the posts list and the user's post list.
         var updates = {};
+        updates['/user-posts/' + newPostKey] = postData;
         updates['/posts/' + uid + '/' + newPostKey] = postData;
     }
     else {
         var updates = {};
-        updates['/posts/' + uid + '/' + postKeyUpdate] = postData;
+        updates['/user-posts/' + newPostKey] = postData;
+        updates['/posts/' + uid + '/' + newPostKey] = postData;
         postKeyUpdate = '';
     }
     firebase.database().ref().update(updates);
@@ -45,13 +74,15 @@ function removePost(postkey) {
 function editPost(postkey) {
     let uid = firebase.auth().currentUser.uid;
     let path = '/posts/' + uid + '/' + postkey;
-
     let promise = firebase.database().ref(path).once('value');
 
     promise.then(snapshot => {
         postKeyUpdate = postkey;
+
         let msg = snapshot.val().body;
+
         post.value = msg;
+        console.log(post)
 
     })
 }
@@ -65,16 +96,9 @@ const botonpostea = document.getElementById('botonpostea');
 
 const div = document.createElement('div');
 function valposteos() {
-
     while (div.firstChild) div.removeChild(div.firstChild);
-
-    var userId = firebase.auth().currentUser.uid;
-
-
-    const promesita = firebase.database().ref('/posts').child(userId).once('value');
-
-    const posteos = promesita.then(function (snapshot) {
-
+    let promise = firebase.database().ref().child('user-posts').once('value');
+    let posteos = promise.then(function (snapshot) {
         Object.keys(snapshot.val()).map(item => {
 
             const p = document.createElement('p');
@@ -86,31 +110,27 @@ function valposteos() {
                     <div><p style="font-size:20px;"></p></div>
                     <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
                     <hr class="w3-clear">
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick ="like('${item}','${userId}')"><i class="far fa-thumbs-up"></i> Me Gusta ${snapshot.val()[item].likeCount}</button>  
-                      <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>         
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick ="like('${item}')"><i class="far fa-thumbs-up"></i> Me Gusta ${snapshot.val()[item].likeCount}</button>  
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>         
                     <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i>EDITAR</button>
                     </div>
                     </div> 
-                    </div><br>`
-                ;
+                    </div><br>`;
             return div.appendChild(p)
         })
         return snapshot.val();
     });
-
     console.log(posteos);
 }
 
 
-function like(postkey, uid) {
-    let postIds = firebase.database().ref('posts/' + uid + '/' + postkey);
+function like(postkey) {
+    let postIds = firebase.database().ref('/user-posts/' + postkey);
     postIds.transaction(function (element) {
         console.log(element)
         if (element) {
             element.likeCount++;
-
             window.location.reload(true);
-            // countText.innerHTML = element.likeCount;
         }
         return element;
     })
