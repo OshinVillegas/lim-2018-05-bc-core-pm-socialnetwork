@@ -235,8 +235,9 @@ function like(postkey, uid) {
 //console.log(valposteos());
 content.appendChild(div)
 botonpostea.addEventListener('click', () => {
-
-    if (post.value != '') {
+    let textVacio = post.value.trim();
+    console.log(textVacio)
+    if (post.value != '' && textVacio != "") {
         console.log('entra al evento')
         var userId = firebase.auth().currentUser.uid;
         const newPost = writeNewPost(userId, post.value);

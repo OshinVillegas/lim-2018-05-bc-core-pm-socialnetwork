@@ -2,29 +2,6 @@ document.getElementById('perfil').addEventListener('click', perfil);
 function perfil() {
     window.location.href = 'index.html'
 }
-
-
-window.onload = () => {
-    firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
-            console.log('Inicio sesion srta')
-        } else {
-
-        }
-        valposteos()
-    });
-
-}
-
-document.getElementById('botoncerrar').addEventListener('click', () => {
-    firebase.auth().signOut().then(function () {
-        console.log('cerraste Sesion srta')
-        location.href = "index.html"
-    }).catch(function (error) {
-        console.log('error al cerrar sesion');
-    })
-})
-
 let postKeyUpdate = '';
 
 function writeNewPost(uid, body) {
@@ -39,17 +16,15 @@ function writeNewPost(uid, body) {
 
     if (postKeyUpdate == '') {
         // Get a key for a new Post.
-        var newPostKey = firebase.database().ref().child('user-posts').push().key;
+        var newPostKey = firebase.database().ref().child('posts').push().key;
 
         // Write the new post's data simultaneously in the posts list and the user's post list.
         var updates = {};
-        updates['/user-posts/' + newPostKey] = postData;
         updates['/posts/' + uid + '/' + newPostKey] = postData;
     }
     else {
         var updates = {};
-        updates['/user-posts/' + newPostKey] = postData;
-        updates['/posts/' + uid + '/' + newPostKey] = postData;
+        updates['/posts/' + uid + '/' + postKeyUpdate] = postData;
         postKeyUpdate = '';
     }
     firebase.database().ref().update(updates);
@@ -97,10 +72,10 @@ const botonpostea = document.getElementById('botonpostea');
 const div = document.createElement('div');
 function valposteos() {
     while (div.firstChild) div.removeChild(div.firstChild);
-    let promise = firebase.database().ref().child('user-posts').once('value');
-    let posteos = promise.then(function (snapshot) {
+    var userId = firebase.auth().currentUser.uid;
+    const promesita = firebase.database().ref('/posts').child(userId).once('value');
+    const posteos = promesita.then(function (snapshot) {
         Object.keys(snapshot.val()).map(item => {
-
             const p = document.createElement('p');
 
             p.innerHTML = `
@@ -110,7 +85,7 @@ function valposteos() {
                     <div><p style="font-size:20px;"></p></div>
                     <div style="font-size:20px;" id=${item}>${snapshot.val()[item].body}</div><br>
                     <hr class="w3-clear">
-                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick ="like('${item}')"><i class="far fa-thumbs-up"></i> Me Gusta ${snapshot.val()[item].likeCount}</button>  
+                    <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick ="like('${item}','${userId}')"><i class="far fa-thumbs-up"></i> Me Gusta ${snapshot.val()[item].likeCount}</button>  
                     <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "removePost('${item}')"><i class="far fa-trash-alt"></i> ELIMINAR</button>         
                     <button class="w3-button w3-theme-d1 w3-margin-bottom" onclick = "editPost('${item}')"><i class="far fa-edit"></i>EDITAR</button>
                     </div>
@@ -124,8 +99,8 @@ function valposteos() {
 }
 
 
-function like(postkey) {
-    let postIds = firebase.database().ref('/user-posts/' + postkey);
+function like(postkey, uid) {
+    let postIds = firebase.database().ref('posts/' + uid + '/' + postkey);
     postIds.transaction(function (element) {
         console.log(element)
         if (element) {
@@ -141,14 +116,17 @@ function like(postkey) {
 //console.log(valposteos());
 content.appendChild(div)
 botonpostea.addEventListener('click', () => {
-
-    console.log('entra al evento')
-
-    var userId = firebase.auth().currentUser.uid;
-    const newPost = writeNewPost(userId, post.value);
-
-    valposteos();
-
-    return 'creo';
-
+    let textVacio = post.value.trim();
+    console.log(textVacio)
+    if (post.value != '' && textVacio != "") {
+        console.log('entra al evento')
+        var userId = firebase.auth().currentUser.uid;
+        const newPost = writeNewPost(userId, post.value);
+        valposteos();
+        post.value = '';
+        return 'creo';
+    }
+    else {
+        alert("Para publicar debes poner texto");
+    }
 });
